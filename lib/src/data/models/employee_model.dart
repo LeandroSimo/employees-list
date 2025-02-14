@@ -1,3 +1,5 @@
+import '../../domain/entities/employee_entity.dart';
+
 class EmployeeModel {
   final String id;
   final String name;
@@ -23,6 +25,17 @@ class EmployeeModel {
       admissionDate: json['admission_date'],
       phone: json['phone'],
       image: json['image'],
+    );
+  }
+
+  EmployeeEntity toEntity() {
+    return EmployeeEntity(
+      id: id,
+      name: name,
+      job: job,
+      admissionDate: admissionDate,
+      phone: phone,
+      image: image,
     );
   }
 }
