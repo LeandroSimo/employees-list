@@ -1,13 +1,12 @@
+import 'package:collaborators_table/src/core/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/network/api_employees.dart';
-import '../../data/datasource/employee_remote_data_source.dart';
-import '../../data/repositories/employee_repository_impl.dart';
 import '../../domain/entities/employee_entity.dart';
 import '../bloc/employee_bloc.dart';
 import '../bloc/employee_event.dart';
 import '../bloc/employee_state.dart';
 import '../provider/employee_bloc_provider.dart';
+import '../widgets/custom_notification_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String route = '/';
@@ -37,11 +36,71 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: StreamBuilder<EmployeeState>(
-          stream: _employeeBloc.stateStream,
-          builder: (context, snapshot) {
-            return _buildUI(snapshot);
-          },
+        child: SingleChildScrollView(
+          child: Container(
+            height: context.mediaQuery.height,
+            width: context.mediaQuery.width,
+            padding: EdgeInsets.all(context.mediaQuery.width * 0.05),
+            color: Colors.white,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: context.mediaQuery.width * 0.075,
+                      backgroundColor: Color(0xFFF5F5F5),
+                      child: Text(
+                        "LS",
+                        style: TextStyle(
+                          fontSize: 23,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    CustomNotificationWidget(),
+                  ],
+                ),
+                SizedBox(height: context.mediaQuery.height * 0.1),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Funcionários",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: context.mediaQuery.height * 0.8,
+                    width: context.mediaQuery.width,
+                    color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        'Collaborators Table',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Container(
+                //   height: context.mediaQuery.height * 0.8,
+                //   width: context.mediaQuery.width,
+                //   color: Colors.green,
+                //   child: StreamBuilder<EmployeeState>(
+                //     stream: _employeeBloc.stateStream,
+                //     builder: (context, snapshot) {
+                //       return _buildUI(snapshot);
+                //     },
+                //   ),
+                // ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -85,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildEmployeeList(List<EmployeeEntity> employees) {
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: employees.length,
       itemBuilder: (context, index) {
         final employee = employees[index];
