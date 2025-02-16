@@ -4,8 +4,8 @@ class ServerException implements Exception {
   ServerException(this.message);
 }
 
-class NetWorkException implements Exception {
+class NetworkException implements Exception {
   final String message;
 
-  NetWorkException(this.message);
+  NetworkException(this.message);
 }

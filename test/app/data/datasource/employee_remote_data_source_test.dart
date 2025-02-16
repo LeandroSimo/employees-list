@@ -1,3 +1,4 @@
+import 'package:collaborators_table/src/core/errors/exceptions.dart';
 import 'package:mockito/annotations.dart';
 import 'package:collaborators_table/src/core/network/api_employees.dart';
 import 'package:collaborators_table/src/core/utils/constants.dart';
@@ -35,22 +36,54 @@ void main() {
     }
   ];
 
-  test(
-      'Deve retornar uma lista de EmployeeModel quando a chamada à API for bem-sucedida',
-      () async {
-    // Arrange
-    when(mockDio.get(ApiConstants.employeesEndoint)).thenAnswer(
-      (_) async => Response(
-        data: tEmployees,
-        statusCode: 200,
+  group('getEmployees', () {
+    test(
+        'Deve retornar uma lista de EmployeeModel quando a chamada à API for bem-sucedida',
+        () async {
+      // Arrange
+      when(mockDio.get(ApiConstants.employeesEndoint)).thenAnswer(
+        (_) async => Response(
+          data: tEmployees,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: ApiConstants.employeesEndoint),
+        ),
+      );
+
+      final result = await dataSource.getEmployees();
+
+      expect(result, isA<List<EmployeeModel>>());
+      expect(result.first.id, "1");
+      verify(mockDio.get(ApiConstants.employeesEndoint));
+    });
+
+    test('Deve lançar uma ServerException quando a API retornar um erro',
+        () async {
+      when(mockDio.get(ApiConstants.employeesEndoint)).thenAnswer(
+        (_) async => Response(
+          data: {'message': 'Erro no servidor'},
+          statusCode: 500,
+          requestOptions: RequestOptions(path: ApiConstants.employeesEndoint),
+        ),
+      );
+
+      final call = dataSource.getEmployees;
+
+      expect(() => call(), throwsA(isA<ServerException>()));
+      verify(mockDio.get(ApiConstants.employeesEndoint)).called(1);
+    });
+
+    test('Deve lançar uma NetworkException quando ocorrer um erro de rede',
+        () async {
+      when(mockDio.get(ApiConstants.employeesEndoint)).thenThrow(DioException(
         requestOptions: RequestOptions(path: ApiConstants.employeesEndoint),
-      ),
-    );
+        error: 'Erro de rede',
+        type: DioExceptionType.connectionTimeout,
+      ));
 
-    final result = await dataSource.getEmployees();
+      final call = dataSource.getEmployees;
 
-    expect(result, isA<List<EmployeeModel>>());
-    expect(result.first.id, "1");
-    verify(mockDio.get(ApiConstants.employeesEndoint));
+      expect(() => call(), throwsA(isA<NetworkException>()));
+      verify(mockDio.get(ApiConstants.employeesEndoint)).called(1);
+    });
   });
 }

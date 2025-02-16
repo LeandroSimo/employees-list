@@ -16,7 +16,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       return employes.map((employee) => employee.toEntity()).toList();
     } on ServerException catch (e) {
       throw e.message;
-    } on NetWorkException catch (e) {
+    } on NetworkException catch (e) {
       throw e.message;
     }
   }

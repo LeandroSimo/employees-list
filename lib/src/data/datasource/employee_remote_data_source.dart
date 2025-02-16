@@ -19,10 +19,12 @@ class EmployeeRemoteDataSource {
           .toList();
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
-        throw NetWorkException('Timeout de conexão');
+        throw NetworkException('Timeout de conexão');
       } else {
         throw ServerException('Erro no servidor: ${e.message}');
       }
+    } catch (e) {
+      throw ServerException('Erro inesperado: $e');
     }
   }
 }
