@@ -1,12 +1,11 @@
 import 'package:collaborators_table/src/core/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/employee_entity.dart';
 import '../bloc/employee_bloc.dart';
 import '../bloc/employee_event.dart';
-import '../bloc/employee_state.dart';
 import '../provider/employee_bloc_provider.dart';
 import '../widgets/custom_notification_widget.dart';
+import '../widgets/list_of_employees.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String route = '/';
@@ -62,8 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     CustomNotificationWidget(),
                   ],
                 ),
-                SizedBox(height: context.mediaQuery.height * 0.1),
-
+                SizedBox(height: context.mediaQuery.height * 0.05),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -71,94 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    height: context.mediaQuery.height * 0.8,
-                    width: context.mediaQuery.width,
-                    color: Colors.red,
-                    child: Center(
-                      child: Text(
-                        'Collaborators Table',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // Container(
-                //   height: context.mediaQuery.height * 0.8,
-                //   width: context.mediaQuery.width,
-                //   color: Colors.green,
-                //   child: StreamBuilder<EmployeeState>(
-                //     stream: _employeeBloc.stateStream,
-                //     builder: (context, snapshot) {
-                //       return _buildUI(snapshot);
-                //     },
-                //   ),
-                // ),
+                SizedBox(height: context.mediaQuery.height * 0.02),
+                ListOfEmployess(employeeBloc: _employeeBloc),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildUI(AsyncSnapshot<EmployeeState> snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return _buildLoading();
-    }
-
-    if (snapshot.hasError || snapshot.data is EmployeeError) {
-      final errorMessage = snapshot.hasError
-          ? snapshot.error.toString()
-          : (snapshot.data as EmployeeError).message;
-      return _buildError(errorMessage);
-    }
-
-    if (!snapshot.hasData || snapshot.data is EmployeeLoading) {
-      return _buildLoading();
-    }
-
-    if (snapshot.data is EmployeeLoaded) {
-      final employees = (snapshot.data as EmployeeLoaded).employees;
-      return _buildEmployeeList(employees);
-    }
-
-    return _buildUnknownError();
-  }
-
-  Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator.adaptive(),
-    );
-  }
-
-  Widget _buildError(String errorMessage) {
-    return Center(
-      child: Text('Erro: $errorMessage'),
-    );
-  }
-
-  Widget _buildEmployeeList(List<EmployeeEntity> employees) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: employees.length,
-      itemBuilder: (context, index) {
-        final employee = employees[index];
-        return ListTile(
-          title: Text(employee.name),
-          subtitle: Text(employee.job),
-        );
-      },
-    );
-  }
-
-  Widget _buildUnknownError() {
-    return const Center(
-      child: Text('Erro desconhecido'),
     );
   }
 }
