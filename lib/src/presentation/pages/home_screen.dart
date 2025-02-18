@@ -19,6 +19,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final EmployeeBloc _employeeBloc;
   bool _isInitialized = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void didChangeDependencies() {
@@ -28,6 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
       _employeeBloc = EmployeeBlocProvider.of(context);
       _employeeBloc.eventSink.add(GetEmployeesEvent());
       _isInitialized = true;
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    if (query.isNotEmpty) {
+      _employeeBloc.eventSink.add(FilterEmployeesEvent(query));
+    } else {
+      _employeeBloc.eventSink.add(GetEmployeesEvent());
+      _searchFocusNode.unfocus();
     }
   }
 
@@ -67,6 +78,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     "Funcionários",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                SizedBox(height: context.mediaQuery.height * 0.02),
+                FractionallySizedBox(
+                  widthFactor: 0.95,
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    decoration: InputDecoration(
+                      hintText: "Pesquisar",
+                      hintStyle: TextStyle(color: Colors.black),
+                      prefixIcon: Icon(Icons.search, color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Color(0xFFF5F5F5),
+                    ),
+                    onChanged: _onSearchChanged,
                   ),
                 ),
                 SizedBox(height: context.mediaQuery.height * 0.02),

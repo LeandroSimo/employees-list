@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../domain/entities/employee_entity.dart';
 import '../../domain/repositories/employee_repository.dart';
 import 'employee_event.dart';
 import 'employee_state.dart';
@@ -15,10 +16,14 @@ class EmployeeBloc {
   StreamSink<EmployeeState> get _stateSink => _stateController.sink;
   Stream<EmployeeState> get stateStream => _stateController.stream;
 
+  List<EmployeeEntity> _allEmployees = [];
+
   EmployeeBloc(this._employeeRepository) {
     _eventStream.listen((event) {
       if (event is GetEmployeesEvent) {
         _getEmployees();
+      } else if (event is FilterEmployeesEvent) {
+        _mapFilterEmployeesEventToState(event);
       }
     });
   }
@@ -27,11 +32,24 @@ class EmployeeBloc {
     _stateSink.add(EmployeeLoading());
 
     try {
-      final employees = await _employeeRepository.getEmployees();
-      _stateSink.add(EmployeeLoaded(employees));
+      _allEmployees = await _employeeRepository.getEmployees();
+      _stateSink.add(EmployeeLoaded(_allEmployees));
     } catch (e) {
       _stateSink.add(EmployeeError(e.toString()));
     }
+  }
+
+  Future<void> _mapFilterEmployeesEventToState(
+      FilterEmployeesEvent event) async {
+    final query = event.query.toLowerCase();
+
+    final filteredEmployees = _allEmployees.where((employee) {
+      return employee.name.toLowerCase().contains(query) ||
+          employee.job.toLowerCase().contains(query) ||
+          employee.phone.contains(query);
+    }).toList();
+
+    _stateSink.add(EmployeeLoaded(filteredEmployees));
   }
 
   void dispose() {

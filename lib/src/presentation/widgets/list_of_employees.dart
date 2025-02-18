@@ -14,7 +14,7 @@ class ListOfEmployess extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: FractionallySizedBox(
-        widthFactor: 0.93,
+        widthFactor: 0.95,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -68,7 +68,7 @@ class ListOfEmployess extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      right: 20,
+                      right: 10,
                       top: -8,
                       child: Text(
                         "•",

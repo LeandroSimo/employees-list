@@ -46,7 +46,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
             child: Row(
               children: [
                 widget.leading,
-                const SizedBox(width: 14),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
